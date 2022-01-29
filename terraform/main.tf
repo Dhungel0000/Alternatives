@@ -1,19 +1,37 @@
-terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "3.5.0"
-    }
-  }
+resource "google_storage_bucket" "bucket" {
+  name     = "adhungel-cloud-function-bucket"
+  location = var.region
+  project  = var.project_id
 }
 
-provider "google" {
-  credentials = file("../serviceaccountkey.json")
-
-  project = "gcp-it-dr-bu-nonlive-f6j"
-  region  = "europe-west1"
+data "archive_file" "src" {
+  type        = "zip"
+  source_dir  = "${path.root}/../src"
+  output_path = "${path.root}/../generated/src.zip"
 }
 
-resource "google_compute_network" "vpc_network" {
-  name = "adhungel-network-alternatives"
+resource "google_storage_bucket_object" "archive" {
+  name   = "${data.archive_file.src.output_md5}.zip"
+  bucket = google_storage_bucket.bucket.name
+  source = "${path.root}/../generated/src.zip"
+}
+
+resource "google_cloudfunctions_function" "function" {
+  name        = "hellogoogle"
+  description = "Scheduled example"
+  runtime     = "java11"
+  available_memory_mb   = 128
+  source_archive_bucket = google_storage_bucket.bucket.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  trigger_http          = true
+  entry_point           = "hellogoogle"
+}
+
+resource "google_cloudfunctions_function_iam_member" "invoker" {
+  project        = google_cloudfunctions_function.function.project
+  region         = google_cloudfunctions_function.function.region
+  cloud_function = google_cloudfunctions_function.function.name
+
+  role   = "roles/cloudfunctions.invoker"
+  member = google_service_account.service_account.email
 }

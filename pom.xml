@@ -9,8 +9,8 @@
     <version>2.6.3</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
-  <groupId>de.otto</groupId>
-  <artifactId>Alternatives</artifactId>
+  <groupId>de.otto.alternatives</groupId>
+  <artifactId>alternatives</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Alternatives</name>
   <description>Alternatives</description>
@@ -57,7 +57,7 @@
         <artifactId>function-maven-plugin</artifactId>
         <version>0.10.0</version>
         <configuration>
-          <functionTarget>functions.HelloGoogle</functionTarget>
+          <functionTarget>de.otto.alternatives.functions.HelloGoogle</functionTarget>
           <server.port>9090</server.port>
         </configuration>
       </plugin>

@@ -1,4 +1,4 @@
-package functions;
+package de.otto.alternatives.functions;
 
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
